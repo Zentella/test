@@ -6,9 +6,21 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    opcion: false
+    opcion: false,
+    equipos:[],
+    planes: [],
+    opiniones: []
   },
   mutations: {
+    GET_EQ(state, datEq) {
+      state.equipos = datEq
+    },
+    GET_PLAN(state, plan) {
+      state.planes = plan
+    },
+    GET_OPINION(state, opinion) {
+      state.opiniones = opinion
+    },
   },
   actions: {
 
@@ -16,17 +28,8 @@ export default new Vuex.Store({
       try {
         const { data: datEq } = await axios.get('/equipos.json')
 
-        // this.kpi = await datos['kpis']
-        console.log('equipos ', datEq)
-        // commit("GET_KPIS", this.kpi)
-
-        // this.orden = await datos['utimas_ordenes']
-        // console.log('utimas_ordenes ',this.orden)
-        // commit("GET_ORDEN", this.orden)
-
-        // this.devol = await datos['ultimas_devoluciones:']
-        // console.log('ultimas_devoluciones: ',this.devol)
-        // commit("GET_DEVOLU", this.devol)
+        console.log('datEq ', datEq)
+        commit("GET_EQ", datEq)
 
       } catch (error) {
         console.log(error)
@@ -37,17 +40,13 @@ export default new Vuex.Store({
       try {
         const { data: datHome } = await axios.get('/home.json')
 
-        // this.kpi = await datos['kpis']
-        console.log('datHome ', datHome)
-        // commit("GET_KPIS", this.kpi)
+        this.plan = await datHome['planes']
+        console.log('plan ', this.plan)
+        commit("GET_PLAN", this.plan)
 
-        // this.orden = await datos['utimas_ordenes']
-        // console.log('utimas_ordenes ',this.orden)
-        // commit("GET_ORDEN", this.orden)
-
-        // this.devol = await datos['ultimas_devoluciones:']
-        // console.log('ultimas_devoluciones: ',this.devol)
-        // commit("GET_DEVOLU", this.devol)
+        this.opinion = await datHome['opiniones']
+        console.log('opinion ', this.opinion)
+        commit("GET_OPINION", this.opinion)
 
       } catch (error) {
         console.log(error)

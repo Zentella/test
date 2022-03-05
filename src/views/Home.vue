@@ -9,6 +9,8 @@
     </v-container>
     <v-row>
       <h3 class="mx-auto">planes</h3>
+    <pre>{{planes}}</pre>
+
       <!-- <Indicadores :kpis="kpis" /> -->
     </v-row>
     <v-row>
@@ -16,18 +18,26 @@
       <!-- <Indicadores :kpis="kpis" /> -->
     </v-row>
     <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
+    <pre>{{opiniones}}</pre>
+
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
+import { mapState } from 'vuex'
+
 import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
   name: 'Home',
   components: {
     HelloWorld
-  }
+  },
+
+  computed: {
+    // valor reactivo
+    ...mapState(['planes', 'opiniones']) // definido como props
+  },
 }
 </script>
 

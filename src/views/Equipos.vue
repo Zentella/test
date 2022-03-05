@@ -1,6 +1,6 @@
 <template>
   <div class="eq">
-    <div v-if="opcion === false">
+    <div v-if="opcion === 'equipos'">
       <v-row>
         <h1 class="mx-auto">Equipos & Accesorios</h1>
       </v-row>
@@ -71,91 +71,115 @@
           </v-card>
         </v-col>
       </v-row>
+      <pre>{{equipos}}</pre>
     </div>
 
-    <div v-if="opcion === true">
+    <div v-if="opcion === 'checkout'">
       <!-- <Check /> -->
       <h1>checkout</h1>
       <v-row>
         <v-col>
-          <h1 class="mx-auto">Datos del Comprador</h1>
+          <h3 class="mx-auto"><i> Datos del Comprador </i></h3>
+          <hr />
           <form>
             <v-text-field
               v-model="name"
-              :error-messages="nameErrors"
               :counter="10"
-              label="Name"
+              label="Nombre"
               required
-              @input="$v.name.$touch()"
-              @blur="$v.name.$touch()"
             ></v-text-field>
             <v-text-field
               v-model="email"
-              :error-messages="emailErrors"
               label="E-mail"
               required
-              @input="$v.email.$touch()"
-              @blur="$v.email.$touch()"
             ></v-text-field>
-            <v-select
-              v-model="select"
-              :items="items"
-              :error-messages="selectErrors"
-              label="Item"
+            <v-text-field
+              v-model="email"
+              label="Repetir E-mail"
               required
-              @change="$v.select.$touch()"
-              @blur="$v.select.$touch()"
-            ></v-select>
-            <v-checkbox
-              v-model="checkbox"
-              :error-messages="checkboxErrors"
-              label="Do you agree?"
+            ></v-text-field>
+            <v-text-field
+              v-model="phoneNumber"
+              :counter="7"
+              label="Teléfono"
               required
-              @change="$v.checkbox.$touch()"
-              @blur="$v.checkbox.$touch()"
-            ></v-checkbox>
+            ></v-text-field>
 
-            <v-btn class="mr-4" @click="submit"> submit </v-btn>
-            <v-btn @click="clear"> clear </v-btn>
+            <h3 class="mx-auto">Datos del Despacho</h3>
+            <hr />
+            <v-text-field
+              v-model="direccion"
+              :counter="10"
+              label="Dirección"
+              required
+            ></v-text-field>
+            <v-text-field
+              v-model="comuna"
+              :counter="10"
+              label="Comuna"
+              required
+            ></v-text-field>
+
+            <h3 class="mx-auto">Forma de Pago</h3>
+            <hr />
+            <v-radio-group v-model="radioGroup">
+              <v-radio
+                v-for="n in radio"
+                :key="n"
+                :label="`${n}`"
+                :value="n"
+              ></v-radio>
+            </v-radio-group>
+
+            <v-btn class="mx-auto" @click="submit"> Confirmar </v-btn>
           </form>
         </v-col>
         <v-col>
-          <h3>Productos</h3>
+          <h5>Productos</h5>
+          <hr>
         </v-col>
       </v-row>
+    </div>
+
+    <div v-if="opcion === 'confirmacion'">confirma
+      <div>
+        La Orden Nº{{numero}} ha sido confirmada y ya la estamos preparando!
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import Cards from '@/components/Cards.vue'
 import Check from '@/components/Check.vue'
 
-import { validationMixin } from 'vuelidate'
-import { required, maxLength, email } from 'vuelidate/lib/validators'
+// import useVuelidate from '@vuelidate/core'
+// import { required, email } from '@vuelidate/validators'
 
 export default {
   name: 'Equipos',
-  mixins: [validationMixin],
+  // mixins: [validationMixin],
 
   components: {
     Cards,
     Check
   },
 
-  validations: {
-    name: { required, maxLength: maxLength(10) },
-    email: { required, email },
-    select: { required },
-    checkbox: {
-      checked(val) {
-        return val
-      }
-    }
-  },
+  // validations: {
+  //   name: { required, maxLength: maxLength(10) },
+  //   email: { required, email },
+  //   select: { required },
+  //   checkbox: {
+  //     checked(val) {
+  //       return val
+  //     }
+  //   }
+  // },
 
   data: () => ({
-    opcion: false,
+    opcion: 'equipos',
     cards: [
       {
         title: 'Pre-fab homes',
@@ -175,61 +199,28 @@ export default {
     ],
 
     name: '',
-      email: '',
-      select: null,
-      items: [
-        'Item 1',
-        'Item 2',
-        'Item 3',
-        'Item 4',
-      ],
-      checkbox: false,
+    email: '',
+    phoneNumber: '',
+    direccion: '',
+    comuna: '',
+    radio: ['Transferencia Bancaria', 'Servipag', 'Webpay', 'Contra entrega'],
+    radioGroup: 1,
+    numero: '123456'
   }),
-
-  computed: {
-      checkboxErrors () {
-        const errors = []
-        if (!this.$v.checkbox.$dirty) return errors
-        !this.$v.checkbox.checked && errors.push('You must agree to continue!')
-        return errors
-      },
-      selectErrors () {
-        const errors = []
-        if (!this.$v.select.$dirty) return errors
-        !this.$v.select.required && errors.push('Item is required')
-        return errors
-      },
-      nameErrors () {
-        const errors = []
-        if (!this.$v.name.$dirty) return errors
-        !this.$v.name.maxLength && errors.push('Name must be at most 10 characters long')
-        !this.$v.name.required && errors.push('Name is required.')
-        return errors
-      },
-      emailErrors () {
-        const errors = []
-        if (!this.$v.email.$dirty) return errors
-        !this.$v.email.email && errors.push('Must be valid e-mail')
-        !this.$v.email.required && errors.push('E-mail is required')
-        return errors
-      },
-    },
 
   methods: {
     heart() {
-      this.opcion = true
+      this.opcion = 'checkout'
     },
 
-    submit () {
-        this.$v.$touch()
-      },
-      clear () {
-        this.$v.$reset()
-        this.name = ''
-        this.email = ''
-        this.select = null
-        this.checkbox = false
-      },
-  }
+    submit() {
+      this.opcion = 'confirmacion'
+    }
+  },
+
+  computed: {
+    // valor reactivo
+    ...mapState(['equipos']) // definido como props
+  },
 }
 </script>
