@@ -7,7 +7,15 @@
       <v-row>
         <v-col
           >Bolsa de Compras BIG MOBILE
+
           <hr />
+          <div class="precio">
+            <h6 class="">TOTAL</h6>
+            <span class="mr-3"> ${{ formatNumber(total) }} </span>
+          </div>
+          <div v-if="total > 0">
+            <v-btn @click="pagar">Pagar</v-btn>
+          </div>
         </v-col>
         <v-col>
           <!-- <h2> Equipos & Accesorios </h2> -->
@@ -58,6 +66,7 @@
                           {{ item }}
                         </li>
                       </ul>
+                      {{ formatNumber(card.precio_promo) }}
                       {{ card.id }}
                     </v-card-text>
 
@@ -76,6 +85,7 @@
       <pre>{{ equipos }}</pre>
     </div>
 
+    <!-- checkout -->
     <div v-if="opcion === 'checkout'">
       <!-- <Check /> -->
       <h1>checkout</h1>
@@ -139,10 +149,15 @@
         <v-col>
           <h5>Productos</h5>
           <hr />
+          <div class="precio">
+            <h6 class="">TOTAL</h6>
+            <span class="mr-3"> ${{ formatNumber(total) }} </span>
+          </div>
         </v-col>
       </v-row>
     </div>
 
+    <!-- confirmación -->
     <div v-if="opcion === 'confirmacion'">
       confirma
       <div>
@@ -153,7 +168,9 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
+import utils from '@/utils/functions'
+const { formatNumber } = utils
 
 import Cards from '@/components/Cards.vue'
 import Check from '@/components/Check.vue'
@@ -183,6 +200,7 @@ export default {
 
   data: () => ({
     opcion: 'equipos',
+    pago: false,
     cards: [
       {
         title: 'Pre-fab homes',
@@ -208,27 +226,39 @@ export default {
     comuna: '',
     radio: ['Transferencia Bancaria', 'Servipag', 'Webpay', 'Contra entrega'],
     radioGroup: 1,
-    numero: '123456'
+    numero: 123456
   }),
 
   methods: {
-    ...mapActions([
-      'addToCart'
-    ]), // inicializa action
+    formatNumber, // incluido en instancia
+    ...mapActions(['addToCart']), // inicializa action
 
     pagar() {
       this.opcion = 'checkout'
-      console.log('id ', this.card.id)
     },
 
     submit() {
       this.opcion = 'confirmacion'
+      // let numero = 123456
+    },
+
+    orden() {
+      orden = this.orden ++
     }
   },
 
   computed: {
     // valor reactivo
+    ...mapGetters(['total']),
     ...mapState(['equipos']) // definido como props
   }
 }
 </script>
+
+<style scoped>
+.precio {
+  color: blue;
+  display: flex;
+  justify-content: space-between;
+}
+</style>

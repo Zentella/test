@@ -11,6 +11,7 @@ export default new Vuex.Store({
     planes: [],
     opiniones: [],
     carrito: [],
+    orden: 0
   },
   mutations: {
     GET_EQ(state, datEq) {
@@ -24,6 +25,9 @@ export default new Vuex.Store({
     },
     ADD_TO_CART(state, equipo) {
       state.carrito.push(equipo)
+    },
+    UPDATE_CART(state, carrito) {
+      state.carrito = carrito;
     },
   },
   actions: {
@@ -61,18 +65,7 @@ export default new Vuex.Store({
     async get_DatosReq({ commit }) {
       try {
         const { data: datReq } = await axios.get('/orderprocessreq.json')
-
-        // this.kpi = await datos['kpis']
         console.log('datReq ', datReq)
-        // commit("GET_KPIS", this.kpi)
-
-        // this.orden = await datos['utimas_ordenes']
-        // console.log('utimas_ordenes ',this.orden)
-        // commit("GET_ORDEN", this.orden)
-
-        // this.devol = await datos['ultimas_devoluciones:']
-        // console.log('ultimas_devoluciones: ',this.devol)
-        // commit("GET_DEVOLU", this.devol)
 
       } catch (error) {
         console.log(error)
@@ -82,36 +75,56 @@ export default new Vuex.Store({
     async get_DatosResp({ commit }) {
       try {
         const { data: datResp } = await axios.get('/orderprocessresp.json')
-
-        // this.kpi = await datos['kpis']
         console.log('datResp ', datResp)
-        // commit("GET_KPIS", this.kpi)
-
-        // this.orden = await datos['utimas_ordenes']
-        // console.log('utimas_ordenes ',this.orden)
-        // commit("GET_ORDEN", this.orden)
-
-        // this.devol = await datos['ultimas_devoluciones:']
-        // console.log('ultimas_devoluciones: ',this.devol)
-        // commit("GET_DEVOLU", this.devol)
 
       } catch (error) {
         console.log(error)
       }
     },
 
-    addToCart({ commit, state, dispatch }, equipoId) {//CA , destructurar para obtener el metodo commit para mutations, el state, y el metodo dispatch para actions
-      const equipoExist = state.carrito.find((p) => p.id == equipoId);
+    addToCart({ commit, state, dispatch }, equipoId) { // CA , destructurar para obtener el metodo commit para mutations, el state, y el metodo dispatch para actions
+      const equipoExist = state.carrito.find((p) => p.id == equipoId)
       if (equipoExist) {
-        dispatch("plus", equipoId);
+        dispatch("plus", equipoId)
       } else {
-        const equipo = { id: equipoId, cant: 1 };
-        commit("ADD_TO_CART", equipo);
+        const equipo = { id: equipoId, cant: 1 }
+        commit("ADD_TO_CART", equipo)
       }
-      alert("equipo añadido al carrito!");
+      // alert("equipo añadido al carrito!")
     },
+    plus({ state, commit }, id) {
+      const carrito = state.carrito.map((p) =>
+        p.id == id ? (p.cant++, p) : p // debe ser igual al q el us dio clic
+      );
+      commit("UPDATE_CART", carrito) // retornar carrito modificado, por medio de una mutacion, este nuevo carrito contiene la info de ese producto q fue incrementado con el boton q tiene signo +
+    }
 
   },
+
+  getters: {//creando getters
+    equipoById: (state) => (id) => {
+      const equipo = state.equipos.find((p) => p.id == id);//buscar equipo con mismo param(id)
+      console.log('eq ', equipo)
+      return equipo;//retornar equipo q coincide
+    },
+    carrito: (state) => {
+      const carrito = state.carrito.map((p) => {//CA recorriendo el carrito para tener los productos dentro
+        const equipo = state.equipos.find((equipo) => equipo.id == p.id);//encontrar obj q coincida
+        return { ...equipo, cant: p.cant };// incluir cant
+      });
+      return carrito;// retorna nvo array q es una mezcla del array de equipo y el de carrito
+    },
+
+    total: (state) => {//CA 
+      return state.carrito.reduce((a, b) => {
+        const equipo = state.equipos.find((p) => p.id == b.id);
+        const totalByEquipo = b.cant * equipo.precio_promo;
+        console.log('totalByEquipo ', totalByEquipo)
+        return a + totalByEquipo;
+      }, 0);//CA valor inicial
+    },
+  },
+
   modules: {
   }
 })
