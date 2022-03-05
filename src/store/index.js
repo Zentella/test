@@ -9,7 +9,8 @@ export default new Vuex.Store({
     opcion: false,
     equipos:[],
     planes: [],
-    opiniones: []
+    opiniones: [],
+    carrito: [],
   },
   mutations: {
     GET_EQ(state, datEq) {
@@ -21,15 +22,19 @@ export default new Vuex.Store({
     GET_OPINION(state, opinion) {
       state.opiniones = opinion
     },
+    ADD_TO_CART(state, equipo) {
+      state.carrito.push(equipo)
+    },
   },
   actions: {
 
     async get_DatosEquipos({ commit }) {
       try {
         const { data: datEq } = await axios.get('/equipos.json')
+        this.datEq = await datEq['productos']
 
-        console.log('datEq ', datEq)
-        commit("GET_EQ", datEq)
+        console.log('equipos ', this.datEq)
+        commit("GET_EQ", this.datEq)
 
       } catch (error) {
         console.log(error)
@@ -93,6 +98,17 @@ export default new Vuex.Store({
       } catch (error) {
         console.log(error)
       }
+    },
+
+    addToCart({ commit, state, dispatch }, equipoId) {//CA , destructurar para obtener el metodo commit para mutations, el state, y el metodo dispatch para actions
+      const equipoExist = state.carrito.find((p) => p.id == equipoId);
+      if (equipoExist) {
+        dispatch("plus", equipoId);
+      } else {
+        const equipo = { id: equipoId, cant: 1 };
+        commit("ADD_TO_CART", equipo);
+      }
+      alert("equipo añadido al carrito!");
     },
 
   },

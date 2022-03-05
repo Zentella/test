@@ -1,13 +1,16 @@
 <template>
-  <div class="eq">
+  <div class="eq ma-5">
     <div v-if="opcion === 'equipos'">
       <v-row>
         <h1 class="mx-auto">Equipos & Accesorios</h1>
       </v-row>
       <v-row>
-        <v-col>Bolsa</v-col>
         <v-col
-          >Fichas
+          >Bolsa de Compras BIG MOBILE
+          <hr />
+        </v-col>
+        <v-col>
+          <!-- <h2> Equipos & Accesorios </h2> -->
           <!-- <Cards /> -->
           <v-card class="mx-auto" max-width="500">
             <v-system-bar color="indigo darken-2" dark>
@@ -23,7 +26,7 @@
             <v-toolbar color="indigo" dark>
               <v-app-bar-nav-icon></v-app-bar-nav-icon>
 
-              <v-toolbar-title>Discover</v-toolbar-title>
+              <v-toolbar-title>Equipos & Accesorios</v-toolbar-title>
 
               <v-spacer></v-spacer>
 
@@ -34,34 +37,33 @@
 
             <v-container fluid>
               <v-row dense>
-                <v-col
-                  v-for="card in cards"
-                  :key="card.title"
-                  :cols="card.flex"
-                >
+                <v-col v-for="card in equipos" :key="card.nombre" cols="6">
                   <v-card>
                     <v-img
-                      :src="card.src"
+                      :src="card.imagen"
+                      :alt="card.imagen"
                       class="white--text align-end"
                       gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
                       height="200px"
                     >
-                      <v-card-title v-text="card.title"></v-card-title>
                     </v-img>
+                    <v-card-title v-text="card.nombre"></v-card-title>
+                    <v-card-text class="text--primary">
+                      <ul class="m-0">
+                        <li
+                          class="text-capitalize w-75"
+                          v-for="(item, i) in card.caracteristicas"
+                          :key="i"
+                        >
+                          {{ item }}
+                        </li>
+                      </ul>
+                      {{ card.id }}
+                    </v-card-text>
 
                     <v-card-actions>
-                      <v-spacer></v-spacer>
-
-                      <v-btn icon @click="heart">
-                        <v-icon>mdi-heart</v-icon>
-                      </v-btn>
-
-                      <v-btn icon>
-                        <v-icon>mdi-bookmark</v-icon>
-                      </v-btn>
-
-                      <v-btn icon>
-                        <v-icon>mdi-share-variant</v-icon>
+                      <v-btn @click="addToCart(card.id)" class="mx-auto">
+                        Agregar
                       </v-btn>
                     </v-card-actions>
                   </v-card>
@@ -71,7 +73,7 @@
           </v-card>
         </v-col>
       </v-row>
-      <pre>{{equipos}}</pre>
+      <pre>{{ equipos }}</pre>
     </div>
 
     <div v-if="opcion === 'checkout'">
@@ -136,21 +138,22 @@
         </v-col>
         <v-col>
           <h5>Productos</h5>
-          <hr>
+          <hr />
         </v-col>
       </v-row>
     </div>
 
-    <div v-if="opcion === 'confirmacion'">confirma
+    <div v-if="opcion === 'confirmacion'">
+      confirma
       <div>
-        La Orden Nº{{numero}} ha sido confirmada y ya la estamos preparando!
+        La Orden Nº{{ numero }} ha sido confirmada y ya la estamos preparando!
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 
 import Cards from '@/components/Cards.vue'
 import Check from '@/components/Check.vue'
@@ -209,8 +212,13 @@ export default {
   }),
 
   methods: {
-    heart() {
+    ...mapActions([
+      'addToCart'
+    ]), // inicializa action
+
+    pagar() {
       this.opcion = 'checkout'
+      console.log('id ', this.card.id)
     },
 
     submit() {
@@ -221,6 +229,6 @@ export default {
   computed: {
     // valor reactivo
     ...mapState(['equipos']) // definido como props
-  },
+  }
 }
 </script>
