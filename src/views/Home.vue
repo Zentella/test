@@ -7,6 +7,14 @@
         </v-flex>
       </v-layout>
     </v-container>
+    <v-row>
+      <h3 class="mx-auto">planes</h3>
+      <!-- <Indicadores :kpis="kpis" /> -->
+    </v-row>
+    <v-row>
+      <h3 class="mx-auto">que dicen</h3>
+      <!-- <Indicadores :kpis="kpis" /> -->
+    </v-row>
     <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
   </div>
 </template>
